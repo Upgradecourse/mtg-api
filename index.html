@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic: The Gathering API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .card {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+            display: inline-block;
+            text-align: center;
+        }
+        .card img {
+            max-width: 200px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Magic: The Gathering - Carte trouvée</h1>
+    <div id="card-container"></div> <!-- Ici on affichera les cartes -->
+
+    <script>
+        // Récupérer la div où on va afficher la carte
+        const cardContainer = document.getElementById("card-container");
+
+        // Appel API
+        fetch("https://api.magicthegathering.io/v1/cards?name=Black%20Lotus&pageSize=1")
+            .then(response => response.json())
+            .then(data => {
+                // Vérifier s'il y a une carte dans la réponse
+                if (data.cards.length > 0) {
+                    const card = data.cards[0]; // Prendre la première carte trouvée
+
+                    console.log(card); // Affiche tout l'objet carte
+            console.log("Nom:", card.name);
+            console.log("Type:", card.type);
+            console.log("Coût en mana:", card.manaCost);
+            console.log("Image URL:", card.imageUrl);
+
+                    // Créer un élément HTML pour afficher la carte
+                    const cardElement = document.createElement("div");
+                    cardElement.classList.add("card");
+
+                    // Ajouter l'image si elle existe
+                    const image = card.imageUrl ? `<img src="${card.imageUrl}" alt="${card.name}">` : "Pas d'image disponible";
+
+                    // Ajouter le HTML dans notre div
+                    cardElement.innerHTML = `
+                        <h2>${card.name}</h2>
+                        <p><strong>Type :</strong> ${card.type}</p>
+                        <p><strong>Mana Cost :</strong> ${card.manaCost || "Inconnu"}</p>
+                        ${image}
+                    `;
+
+                    // Ajouter la carte à la page
+                    cardContainer.appendChild(cardElement);
+                } else {
+                    cardContainer.innerHTML = "<p>Aucune carte trouvée.</p>";
+                }
+            })
+            .catch(error => {
+                console.error("Erreur :", error);
+                cardContainer.innerHTML = "<p>Erreur lors du chargement des cartes.</p>";
+            });
+    </script>
+
+</body>
+</html>
